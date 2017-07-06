@@ -1,5 +1,10 @@
 {
     "name": "Linux-Drive",
     "version": "0.1.0",
-    "main": "Auth.js"
+    "main": "js/main.js",
+    "dependencies": {
+        "google-auth-library": "^0.10.0",
+        "googleapis": "^20.0.1",
+        "open": "0.0.5"
+    }
 }

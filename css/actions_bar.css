@@ -1,0 +1,51 @@
+html,
+body {
+  height: 100%;
+  margin: 0
+}
+
+body{
+    /*background-color:#333;*/
+    padding: 0;
+    font-size: 15px;
+}
+nav {
+    background: #222222;
+    margin:0;
+    overflow: hidden;
+    box-shadow: 0px 5px 5px #111111
+}
+
+nav ul{
+    margin:0;
+    padding: 0;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+nav ul li{
+    display: inline-block;
+    list-style-type: none;
+}
+
+nav > ul > li > button{
+    color: #FFF;
+    background-color:transparent;
+    -moz-border-radius:0.5px;
+    -webkit-border-radius:12px;
+    border: 2px solid #fff;
+    line-height: 2em;
+    padding: 0.5em 1.5em;
+    text-decoration: none;
+    margin-left: 0.5em;
+}
+
+nav > ul > li > button:hover{
+    opacity: 0.6;
+    filter: alpha(opacity=60); /*for ie 8*/
+}
+
+#browsing_window{
+    padding: 1.0em;
+    height: 100%;
+}
