@@ -45,7 +45,7 @@ nav > ul > li > button:hover{
     filter: alpha(opacity=60); /*for ie 8*/
 }
 
-#browsing_window{
+/*#browsing_window{
     padding: 1.0em;
     height: 100%;
-}
+}*/

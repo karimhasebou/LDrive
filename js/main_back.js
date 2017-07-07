@@ -13,6 +13,7 @@ const TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
     process.env.USERPROFILE) + '/.credentials/';
 const TOKEN_PATH = TOKEN_DIR + 'access.json';
 const CLIENT_SECRET_PATH = "res/client_secret.json"
+
 var oauth2Client;
 
 
@@ -35,21 +36,6 @@ app.on('window-all-closed', function() {
     }
 });
 
-function authenticate(){
-    var credentials = fs.readFileSync(CLIENT_SECRET_PATH);
-    credentials = JSON.parse(credentials).installed;
-
-    var auth = new googleAuth();
-    oauth2Client = new auth.OAuth2(credentials.client_id,
-                        credentials.client_secret,
-                        credentials.redirect_uris[0]);
-
-    if(load_token(oauth2Client)){
-        authenticate_complete();
-    }else{
-        request_token(oauth2Client)
-    }
-}
 
 function load_token(oauth2Client){
     var result;
@@ -62,7 +48,7 @@ function load_token(oauth2Client){
     return result;
 }
 
-function request_token(oauth2Client){
+function request_token(oauth2Client, callback){
     var authUrl = oauth2Client.generateAuthUrl({
         access_type: 'offline',
         scope: SCOPES
@@ -83,6 +69,7 @@ function request_token(oauth2Client){
                 if (!err) {
                     oauth2Client.setCredentials(tokens);
                     authenticate_complete();
+                    callback('authentication_complete',  null);
                     save_token(tokens);
                 }else{
                     console.log(err)
@@ -109,14 +96,77 @@ function save_token(token){
 }
 
 
+
+/**
+ * arg: folder to search inside
+ */
+ipcMain.on('view_folders_in_directory', function(event,arg){
+    var service = google.drive('v3');
+    var query = `'${arg}' in parents and trashed=false and mimeType = 'application/vnd.google-apps.folder'`
+
+    service.files.list({
+        q: query,
+        auth: oauth2Client,
+        fields: "nextPageToken, files(id, name)"
+    }, function(err, response) {
+            if (err) {
+                console.log('The API returned an error: folder' + err);
+                return;
+            }
+        console.log('am done in folders')
+        event.sender.send('view_folders_in_directory',response.files);
+    });    
+});
+
+/**
+ * arg: folder to search inside
+ */
+ipcMain.on('view_files_in_directory', function(event,arg){
+    var service = google.drive('v3');
+    var query = `'${arg}' in parents and trashed=false and mimeType != 'application/vnd.google-apps.folder'`
+
+    service.files.list({
+        q: query,
+        auth: oauth2Client,
+        fields: "nextPageToken, files(id, name)"
+    }, function(err, response) {
+            if (err) {
+                console.log('The API returned an error: files' + err);
+                return;
+            }
+        console.log('am  done in files')
+        event.sender.send('view_files_in_directory', response.files);
+    });    
+});
+
 function authenticate_complete(){
     console.log('auth_complete');
 }
 
-app.on('ready', createWindow)
+app.on('ready', createWindow);
 
-function main(){
-  authenticate()
-}
+// ipcMain.on('view_directory', function(event, arg){
+//     res = SEARCH_DRIVE.list_childern(oauth2Client,arg);
+//     event.sender.send('set_folders_list', res[0]);
+//     event.sender.send('set_files_list', res[1]);
+// });
 
-main();
+ipcMain.on('authenticate', function(event, arg){
+    console.log('authenticate back end')
+    var credentials = fs.readFileSync(CLIENT_SECRET_PATH);
+    credentials = JSON.parse(credentials).installed;
+
+    var auth = new googleAuth();
+    oauth2Client = new auth.OAuth2(credentials.client_id,
+                        credentials.client_secret,
+                        credentials.redirect_uris[0]);
+
+    if(load_token(oauth2Client)){
+        authenticate_complete();
+        event.sender.send('authentication_complete',  null);
+    }else{
+        request_token(oauth2Client, callback)
+    }
+});
+
+
