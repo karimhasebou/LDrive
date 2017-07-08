@@ -1,5 +1,5 @@
 const {ipcRenderer}  = require("electron")
-const path_stack = ['root'];
+const currentDirectory = ['root'];
 
 function download(){
 
@@ -37,24 +37,27 @@ function refresh_files_list(files_list){
 }
 
 function open_folder(elem){
-    path_stack.push(elem.id)
+    currentDirectory.push(elem.id)
     get_directory_content(null,null)
 }
 
 function  get_directory_content(event, arg){
     console.log('authentication comple')
-    var len = path_stack.length - 1
-    ipcRenderer.send("view_folders_in_directory", path_stack[len]);
-    ipcRenderer.send("view_files_in_directory", path_stack[len]);
+    var len = currentDirectory.length - 1
+    ipcRenderer.send("view_folders_in_directory", currentDirectory[len]);
+    ipcRenderer.send("view_files_in_directory", currentDirectory[len]);
 }
 
-ipcRenderer.on('update_folder_view', function(event, arg){
-    refresh_folders_list(arg[0]);
-    refresh_files_list(arg[1]);
+ipcRenderer.on('updateFolderView', function(event, arg){
+    console.log('update view')
+    if(arg != null){
+        refresh_folders_list(arg[0]);
+        refresh_files_list(arg[1]);
+    }
 });
 
-ipcRenderer.on('authentication_complete',function(event, arg){
-    
+ipcRenderer.on('authenticationComplete',function(event, arg){
+    ipcRenderer.send('viewDirectory',currentDirectory[0])
 })
 
 ipcRenderer.send('authenticate',null);

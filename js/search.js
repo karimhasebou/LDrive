@@ -7,13 +7,12 @@ exports.listChildern = function(oauth2Client, folder, callback){
         and mimeType = 'application/vnd.google-apps.folder'`
     var fields = "nextPageToken, files(id, name)"
 
-    var start = Promise.all([list(oauth2Client,folder, folders_query),
-        list(oauth2Client,folder, files_query)])
+    var start = Promise.all([list(oauth2Client,folders_query, fields),
+        list(oauth2Client,files_query, fields)])
 
-    start.then(function(results){
-        callback(null, results);
-    },function(error){
-        callback(error, null);
+    start.then(callback,function(error){
+        callback(null);
+        console.log('listing childern error');
     })
 }
 
@@ -24,12 +23,14 @@ function list(oauth2Client, query, fields){
         service.files.list({
             q: query,
             auth: oauth2Client,
-            fields: "nextPageToken, files(id, name)"
+            fields: fields
         },function(err, response){
             if (err) {
+                console.log(err)
                 reject(err);
+            }else{
+                resolve(response.files);
             }
-            resolve(response);
         });
     });
 }

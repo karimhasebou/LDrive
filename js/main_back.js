@@ -33,9 +33,19 @@ ipcMain.on('authenticate', function(event, arg){
         if(err){
             console.log(err)
         }else{
-            event.sender.send('authentication_complete',null);
+            oauth2Client = data;
+            event.sender.send('authenticationComplete',null);
         }
     })
 });
+
+/*
+*/
+ipcMain.on('viewDirectory',function(event, folder){
+    var search = require(__dirname+'/search.js')
+    search.listChildern(oauth2Client,folder,(data)=>{
+        event.sender.send('updateFolderView', data)
+    });
+})
 
 app.on('ready', createWindow);
