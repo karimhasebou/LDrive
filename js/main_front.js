@@ -1,7 +1,4 @@
 const {ipcRenderer}  = require("electron")
-
-var folders_list = [];
-var files_list = [];
 const path_stack = ['root'];
 
 function download(){
@@ -13,15 +10,10 @@ function settings(){
 }
 
 function sync(){
-    
+
 }
 
-function refresh_list(){
-    refresh_files_list();
-    refresh_folders_list();
-}
-
-function refresh_folders_list(){
+function refresh_folders_list(folders_list){
     var list = document.getElementById('folders_list');
     var template_str = ""
 
@@ -33,7 +25,7 @@ function refresh_folders_list(){
     list.innerHTML = template_str;
 }
 
-function refresh_files_list(){
+function refresh_files_list(files_list){
     list = document.getElementById('files_list');
     var template_str = ""
 
@@ -56,30 +48,13 @@ function  get_directory_content(event, arg){
     ipcRenderer.send("view_files_in_directory", path_stack[len]);
 }
 
-ipcRenderer.on('authentication_complete',get_directory_content);
-
-ipcRenderer.on('view_folders_in_directory', function(event,  list){
-    console.log('main front got list of folders')
-    folders_list = list;
-    refresh_folders_list();
+ipcRenderer.on('update_folder_view', function(event, arg){
+    refresh_folders_list(arg[0]);
+    refresh_files_list(arg[1]);
 });
 
-ipcRenderer.on('view_files_in_directory', function(event,  list){
-    console.log('main front got list of files')
-    files_list = list;
-    refresh_files_list();
-});
-
-ipcRenderer.on('set_folders_list', function(event, list){
-    folders_list =  list;
-});
-
-ipcRenderer.on('set_files_list', function(event, list){
-    files_list = list;
-});
-
-ipcRenderer.on('refresh_list', function(event, arg){
-    refresh_list();
-});
+ipcRenderer.on('authentication_complete',function(event, arg){
+    
+})
 
 ipcRenderer.send('authenticate',null);
