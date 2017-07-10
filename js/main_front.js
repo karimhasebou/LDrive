@@ -1,5 +1,5 @@
 const {ipcRenderer}  = require("electron")
-const currentDirectory = ['root'];
+const currentDirectory = [];// contains to arrays of 2 elements. first is folder name, second folder id
 
 function download(){
 
@@ -13,20 +13,20 @@ function sync(){
 
 }
 
-function refresh_folders_list(folders_list){
+function updateFolderView(folders_list){
     var list = document.getElementById('folders_list');
     var template_str = ""
 
     for(var i = 0; i < folders_list.length;i++){
         var x = folders_list[i].id
-        template_str += `<button onclick="open_folder(this)" id="${x}">  ${folders_list[i].name} </button>`;
+        template_str += `<button onclick="openFolder(this.id)" id="${x}">  ${folders_list[i].name} </button>`;
     }
 
     list.innerHTML = template_str;
 }
 
-function refresh_files_list(files_list){
-    list = document.getElementById('files_list');
+function updateFileView(files_list){
+    var list = document.getElementById('files_list');
     var template_str = ""
 
     for(var i = 0; i < files_list.length;i++){
@@ -36,28 +36,42 @@ function refresh_files_list(files_list){
     list.innerHTML = template_str;
 }
 
-function open_folder(elem){
-    currentDirectory.push(elem.id)
-    get_directory_content(null,null)
+function updateAddressView(){
+    var address = document.getElementById('address_view')
+    var template_str = `<ul>`
+
+    var len = currentDirectory.length - 1
+    for(var i = 0; i < len;i++){
+        template_str += `<li><button>${currentDirectory[i]}<button></li>`
+    }
+    template_str += `<li><button>${currentDirectory[len]}</button></li>`
+
+    address.innerHTML = template_str + `</ul>`;
 }
 
-function  get_directory_content(event, arg){
+
+function openFolder(elem){
+    currentDirectory.push(elem)
+    getDirectoryContent()
+}
+
+function  getDirectoryContent(event, arg){
     console.log('authentication comple')
     var len = currentDirectory.length - 1
-    ipcRenderer.send("view_folders_in_directory", currentDirectory[len]);
-    ipcRenderer.send("view_files_in_directory", currentDirectory[len]);
+    ipcRenderer.send("viewDirectory", currentDirectory[len]);
 }
 
 ipcRenderer.on('updateFolderView', function(event, arg){
     console.log('update view')
     if(arg != null){
-        refresh_folders_list(arg[0]);
-        refresh_files_list(arg[1]);
+        updateFolderView(arg[0]);
+        updateFileView(arg[1]);
+        updateAddressView();
     }
 });
 
 ipcRenderer.on('authenticationComplete',function(event, arg){
-    ipcRenderer.send('viewDirectory',currentDirectory[0])
+    openFolder('root')
 })
 
 ipcRenderer.send('authenticate',null);
