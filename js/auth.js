@@ -36,16 +36,18 @@ function loadToken(oauth2Client){
     return new Promise(function(resolve, reject){
         fs.readFile(TOKEN_PATH,function(err, data){
             if(err){
-                reject(data)
+                reject(oauth2Client)
+            }else{
+                oauth2Client.setCredentials(JSON.parse(data))
+                resolve(oauth2Client)
             }
-            oauth2Client.setCredentials(JSON.parse(data))
-            resolve(oauth2Client)
         });
     });
 }
 
 function requestToken(oauth2Client){
     return new Promise(function(resolve, reject){
+
         var http_server = http.createServer(function(req,res){
             res.writeHead(200, {'Content-Type': 'text/html'});
             var url = require('url')
@@ -57,22 +59,31 @@ function requestToken(oauth2Client){
                     reject(err)
                 }else{
                     oauth2Client.setCredentials(tokens);
+                    saveToken(tokens)
                     resolve(oauth2Client)
                 }
             });
             res.end('Authentication successful');
         });
         http_server.listen(LISTEN_PORT, '127.0.0.1');
+
+        var authUrl = oauth2Client.generateAuthUrl({
+            access_type: 'offline',
+            scope: SCOPES
+        });
+
+        var open = require('open');
+        open(authUrl);
     });
 }
 //
-// function saveToken(token){
-//     try {
-//         fs.mkdirSync(TOKEN_DIR);
-//     } catch (err) {
-//         if (err.code != 'EEXIST') {
-//           throw err;
-//         }
-//     }
-//     fs.writeFile(TOKEN_PATH, JSON.stringify(token));
-// }
+function saveToken(token){
+    try {
+        fs.mkdirSync(TOKEN_DIR);
+    } catch (err) {
+        if (err.code != 'EEXIST') {
+          throw err;
+        }
+    }
+    fs.writeFile(TOKEN_PATH, JSON.stringify(token));
+}
