@@ -18,8 +18,8 @@ function updateFolderView(folders_list){
     var template_str = ""
 
     for(var i = 0; i < folders_list.length;i++){
-        var x = folders_list[i].id
-        template_str += `<button onclick="openFolder(this.id)" id="${x}">  ${folders_list[i].name} </button>`;
+        template_str += `<div class="selectableItems" \
+            id="${folders_list[i].id}">  ${folders_list[i].name} </div>`;
     }
 
     list.innerHTML = template_str;
@@ -30,7 +30,7 @@ function updateFileView(files_list){
     var template_str = ""
 
     for(var i = 0; i < files_list.length;i++){
-        template_str += '<button>' + files_list[i].name + '</button>';
+        template_str += '<li>' + files_list[i].name + '</li>';
     }
 
     list.innerHTML = template_str;
