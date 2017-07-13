@@ -1,8 +1,9 @@
 const {ipcRenderer}  = require("electron")
 const currentDirectory = [];// contains to arrays of 2 elements. first is folder name, second folder id
+var selectedFolder = null;
 
 function download(){
-
+    ipcRenderer.send('download',selectedFolder)
 }
 
 function settings(){
@@ -18,11 +19,17 @@ function updateFolderView(folders_list){
     var template_str = ""
 
     for(var i = 0; i < folders_list.length;i++){
-        template_str += `<div class="selectableItems" \
-            id="${folders_list[i].id}">  ${folders_list[i].name} </div>`;
+        template_str += `<li \
+            id="${folders_list[i].id}"\
+            ondblclick="openFolder(this.id)" onclick="selectFolder(this.id,this.innerHTML)">\
+            ${folders_list[i].name} </li>`;
     }
 
     list.innerHTML = template_str;
+}
+
+function selectFolder(elemId, innerHTML){
+    selectedFolder = {"id":elemId, "name":innerHeight}
 }
 
 function updateFileView(files_list){

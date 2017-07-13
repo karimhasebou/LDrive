@@ -1,4 +1,4 @@
-const {app, BrowserWindow, ipcMain} = require('electron');
+const {app, BrowserWindow, ipcMain, dialog} = require('electron');
 const url = require('url');
 const path = require('path');
 
@@ -46,6 +46,15 @@ ipcMain.on('viewDirectory',function(event, folder){
     search.listChildern(oauth2Client,folder,(data)=>{
         event.sender.send('updateFolderView', data)
     });
+})
+
+ipcMain.on('download',function(event, folderInfo){
+    var search = require(__dirname+'/search.js')
+    var path = dialog.showOpenDialog({
+        properties: ['openDirectory'],
+        message: "choose Folder path"
+    });
+    
 })
 
 app.on('ready', createWindow);

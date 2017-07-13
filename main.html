@@ -4,7 +4,24 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel='stylesheet' href='css/actions_bar.css'/>
         <link rel='stylesheet' href='css/browsing_area.css'/>
+
+        <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
         <script src="js/jquery-3.2.1.js"></script>
+        <script src="js/jquery-ui-1.12.1/jquery-ui.js"></script>
+
+        <script>
+            $(function() {
+                $(".selectableItem").selectable();
+
+                // $(".selectableItem").dblclick(function(){
+                //     alert("double click" + this.innerHtml)
+                // })
+            });
+        </script>
+
+        <!-- Insert this line after script imports -->
+        <script>if (window.module) module = window.module;</script>
     </head>
 
     <body>
@@ -20,15 +37,15 @@
 
         </nav>
 
-        <h3>Folders</h3>Folders
-        <div id="folders_list">
+        <h3>Folders</h3>
+        <ol id="folders_list" class="selectableItem">
 
-        </div>
+        </ol>
 
-        <h3>Files</h3>
-        <div id="files_list">
+        </br></br></br><h3>Files</h3>
+        <ol id="files_list" class="selectableItem">
 
-        </div>
+        </ol>
 
 
         <script src="js/main_front.js">
