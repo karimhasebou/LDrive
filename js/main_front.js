@@ -21,7 +21,7 @@ function updateFolderView(folders_list){
     for(var i = 0; i < folders_list.length;i++){
         template_str += `<li \
             id="${folders_list[i].id}"\
-            ondblclick="openFolder(this.id)" onclick="selectFolder(this.id,this.innerHTML)">\
+            ondblclick="openFolder({name: this.innerHTML, id: this.id})" onclick="selectFolder(this.id,this.innerHTML)">\
             ${folders_list[i].name} </li>`;
     }
 
@@ -47,15 +47,19 @@ function updateAddressView(){
     var address = document.getElementById('address_view')
     var template_str = `<ul>`
 
-    var len = currentDirectory.length - 1
+    var len = currentDirectory.length
     for(var i = 0; i < len;i++){
-        template_str += `<li><button>${currentDirectory[i]}<button></li>`
+        template_str += `<li><button id="${i}" onclick="showFromHistory(this.id)">\
+            ${currentDirectory[i].name}</button></li>`
     }
-    template_str += `<li><button>${currentDirectory[len]}</button></li>`
-
     address.innerHTML = template_str + `</ul>`;
 }
 
+function showFromHistory(offset){
+    for(var i = currentDirectory.length-1; i > offset; i--)
+        currentDirectory.pop()
+    getDirectoryContent()
+}
 
 function openFolder(elem){
     currentDirectory.push(elem)
@@ -65,7 +69,7 @@ function openFolder(elem){
 function  getDirectoryContent(event, arg){
     console.log('authentication comple')
     var len = currentDirectory.length - 1
-    ipcRenderer.send("viewDirectory", currentDirectory[len]);
+    ipcRenderer.send("viewDirectory", currentDirectory[len].id);
 }
 
 ipcRenderer.on('updateFolderView', function(event, arg){
@@ -87,7 +91,7 @@ ipcRenderer.on('updateFolderView', function(event, arg){
 });
 
 ipcRenderer.on('authenticationComplete',function(event, arg){
-    openFolder('root')
+    openFolder({name: 'root', id: 'root'})
 })
 
 ipcRenderer.send('authenticate',null);
