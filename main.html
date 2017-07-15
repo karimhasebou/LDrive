@@ -13,10 +13,6 @@
         <script>
             $(function() {
                 $(".selectableItem").selectable();
-
-                // $(".selectableItem").dblclick(function(){
-                //     alert("double click" + this.innerHtml)
-                // })
             });
         </script>
 
@@ -37,15 +33,19 @@
 
         </nav>
 
-        <h3>Folders</h3>
-        <ol id="folders_list" class="selectableItem">
+        <div>
+            <h3>Folders</h3>
+            <ol id="folders_list" class="selectableItem">
 
-        </ol>
+            </ol>
+        </div>
 
-        </br></br></br><h3>Files</h3>
-        <ol id="files_list" class="selectableItem">
+        <div>
+            </br><h3>Files</h3>
+            <ol id="files_list" class="selectableItem">
 
-        </ol>
+            </ol>
+        </div>
 
 
         <script src="js/main_front.js">

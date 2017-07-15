@@ -5,7 +5,9 @@ const path = require('path');
 const fs = require('fs');
 const readline = require('readline');
 const google = require('googleapis');
-const googleAuth = require('google-auth-library');
+const googleAuth = require('google-auth-library')
+const searchDrive = require(__dirname + '/search.js')
+const cacheManager = require(__dirname + '/cacheManager.js')
 
 let win;
 let oauth2Client;
@@ -42,19 +44,23 @@ ipcMain.on('authenticate', function(event, arg){
 /*
 */
 ipcMain.on('viewDirectory',function(event, folder){
-    var search = require(__dirname+'/search.js')
-    search.listChildern(oauth2Client,folder,(data)=>{
-        event.sender.send('updateFolderView', data)
-    });
+    var folderContent = cacheManager.loadFolderContent(folder)
+
+    if(folderContent == null){
+        searchDrive.listChildern(oauth2Client,folder,(data)=>{
+            cacheManager.saveFolderContent(folder, data)
+            folderContent = data
+        });
+    }
+
+    event.sender.send('updateFolderView', folderContent)
 })
 
 ipcMain.on('download',function(event, folderInfo){
-    var search = require(__dirname+'/search.js')
     var path = dialog.showOpenDialog({
         properties: ['openDirectory'],
         message: "choose Folder path"
     });
-    
 })
 
 app.on('ready', createWindow);

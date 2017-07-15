@@ -70,9 +70,18 @@ function  getDirectoryContent(event, arg){
 
 ipcRenderer.on('updateFolderView', function(event, arg){
     console.log('update view')
+    folderList = []
+    fileList = []
+
     if(arg != null){
-        updateFolderView(arg[0]);
-        updateFileView(arg[1]);
+        for (var i = 0; i < arg.length; i++){
+            if(arg[i].mimeType == "application/vnd.google-apps.folder")
+                folderList.push(arg[i])
+            else
+                fileList.push(arg[i])
+        }
+        updateFolderView(folderList);
+        updateFileView(fileList);
         updateAddressView();
     }
 });
