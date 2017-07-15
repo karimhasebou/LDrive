@@ -2,6 +2,23 @@ html,body{
     padding: 0px;
     margin: 0px;
 }
+
+#content{
+    padding: 0px;
+    margin: 0px;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+}
+
+#upper_div, #right_pane{
+    -webkit-flex:1;
+    flex:1;
+    margin-right: 1em;
+    margin-top: 1em;
+}
+
+
 div.scrollmenu {
     background-color: #333;
     overflow: auto;
@@ -32,16 +49,15 @@ div.scrollmenu a:hover {
 }
 .selectableItem {
     list-style-type: none;
-    margin: 0;
-    padding: 0;
-    width: 450px;
+    display: -webkit-flex;
+    display: flex;
+    flex-wrap: wrap;
 }
 .selectableItem li {
     margin: 3px;
     padding: 1px;
-    float: left;
-    width: 100px;
-    height: 40px;
+    width: 10em;
+    height: 2em;
     font-size: 1em;
     margin: 10px 10px 10px 10px;
     box-shadow:0px 3px 20px #111111;
@@ -50,5 +66,7 @@ div.scrollmenu a:hover {
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
