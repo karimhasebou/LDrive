@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <script>
+            if (typeof module === 'object'){
+                window.module = module;
+                module = undefined;
+                }
+        </script>
+
+        <script src="js/jquery-3.2.1.js"></script>
+        <script src="js/jquery-ui-1.12.1/jquery-ui.js"></script>
+
+        <script>
+            $(function() {
+                $(".selectableItem").selectable();
+            });
+        </script>
+
+        <!-- Insert this line after script imports -->
+        <script>
+            if (window.module)
+                module = window.module;
+        </script>
+
+        <link rel='stylesheet' href='css/index.css'/>
+    </head>
+
+    <body>
+        <!-- <div id='overlayBackground'>
+            <div id='floatingLoadingDialog'>
+                <h1>Setting things up</h1>
+                <div class="loader"></div>
+            </div>
+        </div> -->
+        <div id='applicationWindow'>
+            <div class="actionBar">
+                <ul>
+                    <li><button type="button" onclick="download()">Download</button></li>
+                    <li><button type="button" onClick="settings()">Settings</a></li>
+                    <li><button type="button" onClick="sync()">Sync</button></li>
+                </ul>
+            </div>
+
+            <div class="actionBar" id="address_view"></div>
+
+            <div id='content'>
+                <div id='upper_div'>
+                    <h3>Folders</h3>
+                    <ol id="folders_list" class="selectableItem">
+
+                    </ol>
+                </div>
+
+                <div id='lower_div'>
+                    <h3>Files</h3>
+                    <ol id="files_list" class="selectableItem">
+
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <script src="js/index.js"></script>
+    </body>
+</html>
