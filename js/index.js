@@ -1,9 +1,9 @@
 const {ipcRenderer}  = require("electron")
-const currentDirectory = [];// contains to arrays of 2 elements. first is folder name, second folder id
+const currentDirectory = [];
 var selectedFolder = null;
 
 function download(){
-    ipcRenderer.send('download',selectedFolder)
+
 }
 
 function settings(){
@@ -21,7 +21,8 @@ function updateFolderView(folders_list){
     for(var i = 0; i < folders_list.length;i++){
         template_str += `<li \
             id="${folders_list[i].id}"\
-            ondblclick="openFolder({name: this.innerHTML, id: this.id})" onclick="selectFolder(this.id,this.innerHTML)">\
+            ondblclick="openFolder({name: this.innerHTML, id: this.id})"\
+            onclick="selectFolder(this.id,this.innerHTML)">\
             ${folders_list[i].name} </li>`;
     }
 
@@ -49,7 +50,8 @@ function updateAddressView(){
 
     var len = currentDirectory.length
     for(var i = 0; i < len;i++){
-        template_str += `<li><button id="${i}" onclick="showFromHistory(this.id)">\
+        template_str += `<li><button id="${i}"\
+            onclick="showFromHistory(this.id)">\
             ${currentDirectory[i].name}</button></li>`
     }
     address.innerHTML = template_str + `</ul>`;
@@ -66,12 +68,13 @@ function openFolder(elem){
     getDirectoryContent()
 }
 
-function  getDirectoryContent(event, arg){
-    console.log('authentication comple')
+function  getDirectoryContent(){
     var len = currentDirectory.length - 1
-    ipcRenderer.send("viewDirectory", currentDirectory[len].id);
+    ipcRenderer.send("viewDirectory", currentDirectory[len].id)
 }
 
+/**list of files where each file must contain id, name and mimeType
+**/
 ipcRenderer.on('updateFolderView', function(event, arg){
     console.log('update view')
     folderList = []
@@ -91,7 +94,17 @@ ipcRenderer.on('updateFolderView', function(event, arg){
 });
 
 ipcRenderer.on('authenticationComplete',function(event, arg){
-    openFolder({name: 'root', id: 'root'})
+    ipcRenderer.send('buildCache', null);
+    console.log('building cache')
 })
 
-ipcRenderer.send('authenticate',null);
+ipcRenderer.on('buildCache',(event, err)=>{
+    if(err){
+        alert("Error connecting to GDrive, please try later")
+    }else{
+        openFolder({name: "root", id:"root"})
+    }
+})
+
+ipcRenderer.send('authenticate',null)
+console.log('asking for authentication')

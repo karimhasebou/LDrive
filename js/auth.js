@@ -20,6 +20,7 @@ exports.getAuth = function(callback){
         then(loadToken, console.error).
         then((data)=>{callback(null,data)}, requestToken).
         catch(function(error){callback(error,null)})
+    console.log('dunno whats happening in get auth')
 }
 
 function buildAuth(credentials){
@@ -46,6 +47,7 @@ function loadToken(oauth2Client){
 }
 
 function requestToken(oauth2Client){
+    console.log('requesting token')
     return new Promise(function(resolve, reject){
 
         var http_server = http.createServer(function(req,res){
@@ -57,7 +59,9 @@ function requestToken(oauth2Client){
             oauth2Client.getToken(code, function (err, tokens){
                 if (err) {
                     reject(err)
+                    console.log('eerror obtaining token')
                 }else{
+                    console.log('got something for get token response')
                     oauth2Client.setCredentials(tokens);
                     saveToken(tokens)
                     resolve(oauth2Client)
@@ -65,15 +69,18 @@ function requestToken(oauth2Client){
             });
             res.end('Authentication successful');
         });
+        console.log('test0')
         http_server.listen(LISTEN_PORT, '127.0.0.1');
-
+        console.log('test1')
         var authUrl = oauth2Client.generateAuthUrl({
             access_type: 'offline',
             scope: SCOPES
         });
-
+        console.log('test2')
         var open = require('open');
         open(authUrl);
+        console.log(authUrl)
+        console.log('test3')
     });
 }
 //
