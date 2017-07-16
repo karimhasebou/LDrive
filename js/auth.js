@@ -13,32 +13,36 @@ const TOKEN_PATH = TOKEN_DIR + 'access.json';
 const CLIENT_SECRET_PATH = "res/client_secret.json"
 
 
-exports.getAuth = function(callback){
+exports.getAuth = function(callback) {
     readFile(CLIENT_SECRET_PATH).
-        then(JSON.parse, console.error).
-        then(buildAuth, console.error).
-        then(loadToken, console.error).
-        then((data)=>{callback(null,data)}, requestToken).
-        catch(function(error){callback(error,null)})
+    then(JSON.parse, console.error).
+    then(buildAuth, console.error).
+    then(loadToken, console.error).
+    then((data) => {
+        callback(null, data)
+    }, requestToken).
+    catch(function(error) {
+        callback(error, null)
+    })
     console.log('dunno whats happening in get auth')
 }
 
-function buildAuth(credentials){
-    return new Promise(function(resolve, reject){
+function buildAuth(credentials) {
+    return new Promise(function(resolve, reject) {
         var auth = new googleAuth();
         var oauth2Client = new auth.OAuth2(credentials.installed.client_id,
-                            credentials.installed.client_secret,
-                            credentials.installed.redirect_uris[0]);
+            credentials.installed.client_secret,
+            credentials.installed.redirect_uris[0]);
         resolve(oauth2Client);
     })
 }
 
-function loadToken(oauth2Client){
-    return new Promise(function(resolve, reject){
-        fs.readFile(TOKEN_PATH,function(err, data){
-            if(err){
+function loadToken(oauth2Client) {
+    return new Promise(function(resolve, reject) {
+        fs.readFile(TOKEN_PATH, function(err, data) {
+            if (err) {
                 reject(oauth2Client)
-            }else{
+            } else {
                 oauth2Client.setCredentials(JSON.parse(data))
                 resolve(oauth2Client)
             }
@@ -46,21 +50,23 @@ function loadToken(oauth2Client){
     });
 }
 
-function requestToken(oauth2Client){
+function requestToken(oauth2Client) {
     console.log('requesting token')
-    return new Promise(function(resolve, reject){
+    return new Promise(function(resolve, reject) {
 
-        var http_server = http.createServer(function(req,res){
-            res.writeHead(200, {'Content-Type': 'text/html'});
+        var http_server = http.createServer(function(req, res) {
+            res.writeHead(200, {
+                'Content-Type': 'text/html'
+            });
             var url = require('url')
             var parts = url.parse(req.url, true);
             var code = parts.query['code'];
 
-            oauth2Client.getToken(code, function (err, tokens){
+            oauth2Client.getToken(code, function(err, tokens) {
                 if (err) {
                     reject(err)
                     console.log('eerror obtaining token')
-                }else{
+                } else {
                     console.log('got something for get token response')
                     oauth2Client.setCredentials(tokens);
                     saveToken(tokens)
@@ -84,12 +90,12 @@ function requestToken(oauth2Client){
     });
 }
 //
-function saveToken(token){
+function saveToken(token) {
     try {
         fs.mkdirSync(TOKEN_DIR);
     } catch (err) {
         if (err.code != 'EEXIST') {
-          throw err;
+            throw err;
         }
     }
     fs.writeFile(TOKEN_PATH, JSON.stringify(token));

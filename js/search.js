@@ -2,12 +2,10 @@ const google = require('googleapis')
 const service = google.drive('v3')
 
 exports.listChildernPromise = function(oauth2Client, folder){
-    return new Promise((resolve, reject)=>{
-        var query = `'${folder}' in parents and trashed=false`
-        var fields = "nextPageToken, files(id, name, mimeType)"
+    var query = `'${folder}' in parents and trashed=false`
+    var fields = "nextPageToken, files(id, name, mimeType)"
 
-        list(oauth2Client,query, fields).then(resolve,reject)
-    })
+    return list(oauth2Client,query, fields)
 }
 
 exports.listChildern = function(oauth2Client, folder, callback){
@@ -26,7 +24,8 @@ function list(oauth2Client, query, fields){
         service.files.list({
             q: query,
             auth: oauth2Client,
-            fields: fields
+            fields: fields,
+            pageSize: 1000
         },function(err, response){
             if (err) {
                 console.log(err)
@@ -46,7 +45,8 @@ exports.listAllFolders = function(oauth2Client, callback) {
             fields: 'nextPageToken, files(id, name, mimeType)',
             spaces: 'drive',
             auth: oauth2Client,
-            pageToken: pageToken
+            pageToken: pageToken,
+            pageSize: 1000
         }, (err, res) => {
             if (err) {
                 callback(err, null)
@@ -54,8 +54,8 @@ exports.listAllFolders = function(oauth2Client, callback) {
             } else {
                 results = results.concat(res.files)
                 if (res.nextPageToken) {
-                    loop(res.nextPageToken)
                     console.log('reading net page token')
+                    loop(res.nextPageToken)
                 } else {
                     callback(null, results)
                     console.log('read all folders')
