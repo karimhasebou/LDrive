@@ -8,6 +8,7 @@ const google = require('googleapis')
 const googleAuth = require('google-auth-library')
 const searchDrive = require(__dirname + '/search.js')
 const cacheManager = require(__dirname + '/cacheManager.js')
+const downloadManager = require(__dirname + '/downloadManager.js')
 
 let win
 let oauth2Client
@@ -40,6 +41,7 @@ ipcMain.on('authenticate', function(event, arg){
             oauth2Client = data
             console.log('authenticationComplete')
             event.sender.send('authenticationComplete',null)
+            downloadManager.setAuthClient(oauth2Client)
         }
     })
 })
@@ -59,10 +61,21 @@ ipcMain.on('viewDirectory',function(event, folder){
     event.sender.send('updateFolderView', folderContent)
 })
 
-ipcMain.on('download',function(event, folderInfo){
+ipcMain.on('downloadRequest',function(event, folder){
     var path = dialog.showOpenDialog({
         properties: ['openDirectory'],
         message: "choose Folder path"
+    })
+    path += `/${folder.name.trim()}`
+    console.log("path: "+path)
+    var files = cacheManager.loadFolderContent(folder.id)
+
+    downloadManager.download(files, path, (err,data)=>{
+        if(err){
+            console.error(err + "download failed")
+        }else{
+            console.log(data + 'download successful')
+        }
     })
 })
 
@@ -76,5 +89,6 @@ ipcMain.on('buildCache', (event, data)=>{
         })
     }
 })
+
 
 app.on('ready', createWindow)

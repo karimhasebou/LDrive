@@ -3,7 +3,7 @@ const currentDirectory = [];
 var selectedFolder = null;
 
 function download(){
-
+    ipcRenderer.send('downloadRequest',selectedFolder)
 }
 
 function settings(){
@@ -22,7 +22,7 @@ function updateFolderView(folders_list){
         template_str += `<li \
             id="${folders_list[i].id}"\
             ondblclick="openFolder({name: this.innerHTML, id: this.id})"\
-            onclick="selectFolder(this.id,this.innerHTML)">\
+            onclick="selectFolder(this.id, this.innerHTML)">\
             ${folders_list[i].name} </li>`;
     }
 
@@ -30,7 +30,7 @@ function updateFolderView(folders_list){
 }
 
 function selectFolder(elemId, innerHTML){
-    selectedFolder = {"id":elemId, "name":innerHeight}
+    selectedFolder = {id: elemId, name: innerHTML}
 }
 
 function updateFileView(files_list){

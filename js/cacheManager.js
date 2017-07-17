@@ -5,9 +5,20 @@ const promise = require('bluebird');
 const store = new Store()
 const SYNC_LIST = "SYNC"
 const FOLDER_CONTENT = "FOLDER_CONTENT"
+const FOLDER_WATCH_LIST = "FOLDER_WATCH_LIST"
 const FILE_NAME = "FILE_NAME"
 const CACHE_STATUS = 'CACHE_STATUS'
 const MY_REF = this
+
+exports.addToWatchList = function(folderId){
+    var x = store.get(FOLDER_WATCH_LIST, [])
+    x.push(folderId)
+    store.set(FOLDER_WATCH_LIST, x)
+}
+
+exports.getWatchList  = function(){
+    return store.get(FOLDER_WATCH_LIST, [])
+}
 
 exports.saveFolderContent = function(folderId, files) {
     var key = FOLDER_CONTENT + `.${folderId}`

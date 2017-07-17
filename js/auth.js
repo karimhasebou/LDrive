@@ -71,6 +71,7 @@ function requestToken(oauth2Client) {
                     oauth2Client.setCredentials(tokens);
                     saveToken(tokens)
                     resolve(oauth2Client)
+                    http_server.close()
                 }
             });
             res.end('Authentication successful');
